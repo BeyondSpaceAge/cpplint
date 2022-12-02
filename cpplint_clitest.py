@@ -31,6 +31,7 @@
 
 """Command Line interface integration test for cpplint.py."""
 
+
 import os
 import sys
 import subprocess
@@ -39,7 +40,7 @@ import shutil
 import tempfile
 from testfixtures import compare
 
-BASE_CMD = sys.executable + ' ' + os.path.abspath('./cpplint.py ')
+BASE_CMD = f'{sys.executable} ' + os.path.abspath('./cpplint.py ')
 
 def RunShellCommand(cmd, cwd='.'):
     """
@@ -64,7 +65,7 @@ def RunShellCommand(cmd, cwd='.'):
 class UsageTest(unittest.TestCase):
 
     def testHelp(self):
-        (status, out, err) = RunShellCommand(BASE_CMD + ' --help')
+        (status, out, err) = RunShellCommand(f'{BASE_CMD} --help')
         self.assertEqual(0, status)
         self.assertEqual(b'', out)
         self.assertTrue(err.startswith(b'\nSyntax: cpplint'))
@@ -145,8 +146,9 @@ class TemporaryFolderClassSetup(object):
         # command to reproduce, do not forget first two lines have special meaning
         print("\ncd " + cwd + " && " + cmd + " 2> <filename>")
         (status, out, err) = RunShellCommand(cmd, cwd)
-        self.assertEqual(expected_status, status, 'bad command status %s' % status)
-        prefix = 'Failed check in %s comparing to %s for command: %s' % (cwd, definition_file, cmd)
+        self.assertEqual(expected_status, status, f'bad command status {status}')
+        prefix = f'Failed check in {cwd} comparing to {definition_file} for command: {cmd}'
+
         compare('\n'.join(expected_err), err.decode('utf8'), prefix=prefix, show_whitespace=True)
         compare('\n'.join(expected_out), out.decode('utf8'), prefix=prefix, show_whitespace=True)
 
@@ -155,7 +157,7 @@ class NoRepoSignatureTests(TemporaryFolderClassSetup, unittest.TestCase):
     """runs in a temporary folder (under /tmp in linux) without any .git/.hg/.svn file"""
 
     def get_extra_command_args(self, cwd):
-        return (' --repository %s ' % self._root)
+        return f' --repository {self._root} '
 
     def testChromiumSample(self):
         self.checkAllInFolder('./samples/chromium-sample', 1)
